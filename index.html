@@ -11,7 +11,7 @@
 html,body{margin:0;padding:0}
 body{overflow-x:clip}
 body{background:var(--ink);color:var(--ivory);font-family:"Playfair Display",Georgia,serif;padding:56px 0 0}
-.wrap{max-width:1240px;margin:0 auto;padding:0 40px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 40px;overflow-x:hidden}
 h1{font-size:38px;font-weight:400;margin:0 0 10px}
 .hero{line-height:1.1;margin:0 0 64px}
 .hero .big{display:block;font-size:192px;line-height:1;margin-top:10px}
@@ -21,7 +21,10 @@ h1{font-size:38px;font-weight:400;margin:0 0 10px}
 @media (max-width:820px){.hero .big{font-size:108px}}
 .lede{font-size:18px;line-height:1.8;color:var(--gold);margin:0 0 40px;max-width:64ch}
 section{margin-bottom:170px}
-.tex{font-size:34px;margin:0 0 12px}
+.tex{font-size:34px;margin:0 0 12px;max-width:100%;overflow:hidden}
+.tex mjx-container{max-width:100%!important;display:block!important;margin:0!important}
+.tex mjx-container svg{max-width:100%!important;height:auto!important}
+.sub mjx-container svg,.mid mjx-container svg,.instr mjx-container svg,.hint mjx-container svg{max-width:100%!important}
 .sub{font-size:18px;line-height:1.8;margin:0 0 6px;max-width:76ch;color:#f3efe2}
 .mid{font-size:18px;line-height:1.8;margin:0 0 6px;max-width:76ch;color:#e6dfc0}
 .instr{font-size:17px;line-height:1.8;color:var(--gold);margin:14px 0 22px;max-width:80ch}
@@ -35,7 +38,7 @@ canvas{display:block;width:100%;cursor:crosshair}
 .lad div{font-size:24px;height:30px;margin:0 0 16px}
 .eq{position:absolute;left:0;width:100%;text-align:center;font-size:40px;color:var(--gold)}
 .eq0{position:absolute;left:0;top:46px;width:100%;text-align:center;font-size:26px;color:#fff}
-.deep{background:linear-gradient(180deg,#050914 0%,#000 18%,#000 100%);padding:30px 0 120px}
+.deep{background:linear-gradient(180deg,#050914 0%,#000 18%,#000 100%);padding:30px 0 120px;overflow-x:hidden}
 .bold{font-weight:500}
 .names .w{transition:margin-bottom .15s}
 #sec-rein{margin-top:760px}
@@ -53,7 +56,10 @@ mjx-container{line-height:0}
 .endinner{position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center}
 .endinner p{color:var(--gold);font-size:26px;margin:0}
 @media (min-width:900px){ .frame{margin:0 110px} .names,.void{margin:0 110px} }
-@media (max-width:820px){body{padding:36px 0 0}.wrap{padding:0 18px}section{margin-bottom:110px}}
+@media (max-width:820px){body{padding:36px 0 0}.wrap{padding:0 18px}section{margin-bottom:110px}
+.tex{font-size:24px}.bighead{font-size:32px}h1{font-size:28px}
+.lad{width:40%}.ladA{left:4%}.ladB{right:4%}.lad div{font-size:20px}
+.names .n{font-size:21px}}
 </style>
 </head>
 <body>
