@@ -217,6 +217,27 @@ function tex(el,s){
   }catch(e){}
   el.textContent=s.replace(/\\[a-zA-Z]+|[{}]/g,'').trim();
 }
+function miniSky(x,cx,cy,R,seed){
+  x.save();
+  x.beginPath(); x.arc(cx,cy,R,0,7); x.clip();
+  x.fillStyle='#050810'; x.fillRect(cx-R,cy-R,R*2,R*2);
+  const r=rng(seed), pts=[];
+  for(let i=0;i<90;i++){ const a=r()*6.283, d=Math.sqrt(r())*R; pts.push([cx+Math.cos(a)*d,cy+Math.sin(a)*d]); }
+  x.fillStyle=rgba(IV,0.6);
+  pts.forEach(p=>{ x.beginPath(); x.arc(p[0],p[1],1.2,0,7); x.fill(); });
+  x.strokeStyle=rgba(GOLD,0.85); x.lineWidth=1.1; x.fillStyle=rgba(GOLD,0.95);
+  for(let q=0;q<4;q++){
+    const ch=[];
+    for(let i=0;i<3+((r()*3)|0);i++) ch.push(pts[(r()*pts.length)|0]);
+    x.beginPath(); ch.forEach((p,m)=>m?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1])); x.stroke();
+    ch.forEach(p=>{ x.beginPath(); x.arc(p[0],p[1],2.4,0,7); x.fill(); });
+  }
+  x.restore();
+  x.shadowColor=rgba(GOLD,0.8); x.shadowBlur=16;
+  x.strokeStyle=rgba(GOLD,1); x.lineWidth=1.6;
+  x.beginPath(); x.arc(cx,cy,R,0,7); x.stroke();
+  x.shadowBlur=0;
+}
 function nebula(x,w,h,dark){
   const g=x.createRadialGradient(w*0.42,h*0.36,10,w*0.5,h*0.5,Math.max(w,h)*0.8);
   g.addColorStop(0,dark?'rgba(20,30,60,0.4)':'rgba(30,44,86,0.5)');
@@ -275,7 +296,7 @@ function drawFinite(){
 const OM={s:1,dots:[],pick:-1}, OQ=0.93;
 function drawOmega(){
   const [x,w,h]=setup('omega');
-  const L=40,R=w-40, span=R-L, s=OM.s;
+  const L=96,R=w-40, span=R-L, s=OM.s;
   OM.dots=[];
   let i0=0;
   while(i0<20000 && span*Math.pow(OQ,i0)*s > span+40) i0++;
@@ -298,7 +319,7 @@ function drawOmega(){
 function makeUniverse(id,rootSeed,maxDepth,hintId,opts){
   opts=opts||{};
   const c=document.getElementById(id);
-  const st={cam:{x:0,y:0,z:1},cam2:{x:0,y:0,z:0.42},stack:[],snaps:[],rendered:[],rendered2:[],pick:null,pick2:null,focus:false,inner:null,lit:false};
+  const st={cam:{x:0,y:0,z:1},cam2:{x:0,y:0,z:0.42},stack:[],snaps:[],rendered:[],rendered2:[],pick:null,pick2:null,focus:false,inner:null,lit:false,pop:null};
   const cache=new Map(), OCT=8;
   function cell(k,i,j,seed,dep){
     const kk=((k%OCT)+OCT)%OCT, key=kk+':'+i+':'+j+':'+seed+':'+dep;
@@ -470,6 +491,15 @@ function makeUniverse(id,rootSeed,maxDepth,hintId,opts){
       x.lineWidth=1.4; x.strokeStyle=rgba(GOLD,0.9);
       x.beginPath(); x.moveTo(w-34,20); x.lineTo(w-20,34); x.moveTo(w-20,20); x.lineTo(w-34,34); x.stroke();
     }
+    if(st.pop){
+      const pr=Math.min(78,R*0.42);
+      let px2=st.pop.x+pr+26, py2=st.pop.y;
+      if(px2+pr>cx+R) px2=st.pop.x-pr-26;
+      py2=Math.max(pr+8,Math.min(h-pr-8,py2));
+      x.strokeStyle=rgba(GOLD,0.5); x.lineWidth=0.8;
+      x.beginPath(); x.moveTo(st.pop.x,st.pop.y); x.lineTo(px2,py2); x.stroke();
+      miniSky(x,px2,py2,pr,st.pop.seed);
+    }
     if(opts.outside){
       const ox2=Math.min(w-46,cx+R+130), lit=st.lit;
       x.shadowColor=rgba(GOLD,1);
@@ -537,6 +567,7 @@ function makeUniverse(id,rootSeed,maxDepth,hintId,opts){
     if(!best) return;
     if(best.ring&&bd<600&&opts.circle){
       st.pick={k:best.k,i:best.i,j:best.j,cid:best.cid};
+      st.pop={x:best.sx,y:best.sy,seed:hash(best.k,best.i,best.j,best.idx)};
       draw();
       tex(document.getElementById(hintId),'\\text{a subset of uncountable cardinality}');
       return;
@@ -553,6 +584,7 @@ function makeUniverse(id,rootSeed,maxDepth,hintId,opts){
     }
     const T=top(), cl=cell(best.k,best.i,best.j,T.seed,T.dep), o=cl.sets[best.cid];
     st.pick={k:best.k,i:best.i,j:best.j,cid:best.cid};
+    st.pop=null;
     draw();
     if(opts.wc){
       const red=st.focus?true:o.red;
@@ -574,7 +606,7 @@ function makeUniverse(id,rootSeed,maxDepth,hintId,opts){
 const TW={s:1,circles:[],pick:-1}, TQ=0.63, TGAP=1.62;
 function drawTower(){
   const [x,w,h]=setup('tower');
-  const R0=Math.min(110,w*0.14), Y0=14+R0, CYINF=Y0+R0*TGAP/(1-TQ), s=TW.s;
+  const R0=Math.min(110,w*0.14), Y0=44+R0, CYINF=Y0+R0*TGAP/(1-TQ), s=TW.s;
   TW.circles=[];
   let k0=0;
   while(k0<4000 && CYINF-(R0*TGAP*Math.pow(TQ,k0)/(1-TQ))*s < -60) k0++;
@@ -862,9 +894,15 @@ function boot(){
     TW.s=Math.max(1,TW.s*Math.exp(ev.deltaY*0.0016)); drawTower(); },{passive:false});
   tw.addEventListener('click',ev=>{
     const b=tw.getBoundingClientRect(), mx=ev.clientX-b.left, my=ev.clientY-b.top, w=tw.clientWidth;
-    let best=null,bd=1e9;
-    TW.circles.forEach(o=>{const d=Math.abs(Math.hypot(mx-w/2,my-o.cy)-o.R); if(d<bd){bd=d;best=o;}});
-    if(!best||bd>60) return;
+    let best=null;
+    TW.circles.forEach(o=>{
+      if(Math.hypot(mx-w/2,my-o.cy)<=o.R && (!best||o.k<best.k)) best=o;
+    });
+    if(!best){
+      let bd=1e9;
+      TW.circles.forEach(o=>{const d=Math.abs(Math.hypot(mx-w/2,my-o.cy)-o.R); if(d<bd){bd=d;best=o;}});
+      if(!best||bd>40) return;
+    }
     TW.pick=best.k; drawTower();
     const k=best.k;
     let s;
