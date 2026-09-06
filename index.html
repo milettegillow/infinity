@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Infinite cardinalities</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#050914;--panel:#080e1e;--ivory:#f3efe2;--gold:#c9b878}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{overflow-x:clip}
+body{background:var(--ink);color:var(--ivory);font-family:"Playfair Display",Georgia,serif;padding:56px 0 0}
+.wrap{max-width:1240px;margin:0 auto;padding:0 40px}
+h1{font-size:38px;font-weight:400;margin:0 0 10px}
+.hero{line-height:1.1;margin:0 0 64px}
+.hero .big{display:block;font-size:192px;line-height:1;margin-top:10px}
+.rule{display:flex;align-items:center;gap:22px;margin:0 0 88px}
+.rule .ln{flex:1;height:1px;background:rgba(201,184,120,0.42)}
+.rule .inf{color:var(--gold);font-size:30px;line-height:0}
+@media (max-width:820px){.hero .big{font-size:108px}}
+.lede{font-size:18px;line-height:1.8;color:var(--gold);margin:0 0 40px;max-width:64ch}
+section{margin-bottom:170px}
+.tex{font-size:34px;margin:0 0 12px}
+.sub{font-size:18px;line-height:1.8;margin:0 0 6px;max-width:76ch;color:#f3efe2}
+.mid{font-size:18px;line-height:1.8;margin:0 0 6px;max-width:76ch;color:#e6dfc0}
+.instr{font-size:17px;line-height:1.8;color:var(--gold);margin:14px 0 22px;max-width:80ch}
+.frame{background:var(--panel);border:1px solid rgba(201,184,120,0.28)}
+.frame.live{border-color:var(--gold)}
+canvas{display:block;width:100%;cursor:crosshair}
+.hint{font-size:17px;color:var(--gold);margin:14px 0 0;min-height:1.6em}
+.void{position:relative;height:1400px;overflow:hidden}
+.lad{position:absolute;top:0;width:32%;text-align:center}
+.ladA{left:8%}.ladB{right:8%}
+.lad div{font-size:24px;height:30px;margin:0 0 16px}
+.eq{position:absolute;left:0;width:100%;text-align:center;font-size:40px;color:var(--gold)}
+.eq0{position:absolute;left:0;top:46px;width:100%;text-align:center;font-size:26px;color:#fff}
+.deep{background:linear-gradient(180deg,#050914 0%,#000 18%,#000 100%);padding:30px 0 120px}
+.bold{font-weight:500}
+.names .w{transition:margin-bottom .15s}
+#sec-rein{margin-top:760px}
+.deep .frame{background:#04060d;border-color:rgba(201,184,120,0.22)}
+.bighead{font-size:44px;font-weight:400;margin:0 0 46px}
+.tiny{font-size:17px;color:#efe8cf;margin:0 0 6px}
+.white{color:#fff}
+.names{text-align:center;padding:80px 0 30px}
+.names .n{font-size:25px;padding:8px 0;cursor:pointer;transition:transform .15s}
+.names .n:hover{opacity:.72}
+.names .d{font-size:17px;line-height:1.7;color:var(--gold);max-width:60ch;margin:6px auto 14px}
+mjx-assistive-mml{display:none!important}
+mjx-container{line-height:0}
+.end{height:190vh;background:#000}
+.endinner{position:sticky;top:0;height:100vh;display:flex;align-items:center;justify-content:center}
+.endinner p{color:var(--gold);font-size:26px;margin:0}
+@media (min-width:900px){ .frame{margin:0 110px} .names,.void{margin:0 110px} }
+@media (max-width:820px){body{padding:36px 0 0}.wrap{padding:0 18px}section{margin-bottom:110px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1 class="hero">A visual representation of<br><span class="big">infinity</span></h1>
+<div class="rule"><span class="ln"></span><span class="k inf" data-tex="\infty"></span><span class="ln"></span></div>
+<p class="sub">In set theory we typically work with infinite sized sets of different sizes.</p>
+<p class="mid" style="margin-bottom:18px">We call these sizes cardinalities, because they are sizes of sets rather than numbers.</p>
+<p class="lede" style="margin-bottom:120px">Click a panel to enter it, scroll to zoom, select each object to see what it is.</p>
+
+<section>
+  <p class="tex" data-tex="\text{finite}"></p>
+  <p class="sub">Every set of finite size.</p>
+  <p class="instr">Click a row to see which cardinality it represents.</p>
+  <div class="frame" data-live="finite"><canvas id="finite" style="height:660px"></canvas></div>
+  <p class="hint" id="hf">&nbsp;</p>
+</section>
+
+<section>
+  <p class="tex" data-tex="\aleph_0=\bet_0=\omega"></p>
+  <p class="mid">Pronounced &ldquo;aleph-zero&rdquo; / &ldquo;beth-zero&rdquo; / &ldquo;omega&rdquo;.</p>
+  <p class="sub">Countable infinity: the smallest infinite set.</p>
+  <p class="instr">Scroll to get closer to the right-hand end, click a dot to see which number it represents.</p>
+  <div class="frame" data-live="omega"><canvas id="omega" style="height:200px"></canvas></div>
+  <p class="hint" id="h0">&nbsp;</p>
+</section>
+
+<section>
+  <p class="tex" data-tex="\mathcal{P}(\aleph_0)=\bet_1=\cee"></p>
+  <p class="sub">Every possible subset of <span class="k" data-tex="\aleph_0"></span>, with cardinality up to <span class="k" data-tex="\aleph_0"></span>.</p>
+  <p class="mid">The same size as the real number line, or the &ldquo;continuum&rdquo;.</p>
+  <p class="instr">Scroll to travel, click any constellation to see which cardinality that subset has.</p>
+  <div class="frame" data-live="u1"><canvas id="u1" style="height:560px"></canvas></div>
+  <p class="hint" id="h1">&nbsp;</p>
+</section>
+
+<section>
+  <p class="tex" data-tex="\mathcal{P}(\mathcal{P}(\aleph_0))=\bet_2"></p>
+  <p class="sub">Every possible subset of <span class="k" data-tex="\bet_1"></span>, with cardinality up to <span class="k" data-tex="\bet_1"></span>.</p>
+  <p class="instr">Scroll to travel, click a ringed star to go inside it.</p>
+  <div class="frame" data-live="u2"><canvas id="u2" style="height:560px"></canvas></div>
+  <p class="hint" id="h2">&nbsp;</p>
+</section>
+
+<section>
+  <p class="tex" data-tex="\mathcal{P}(\mathcal{P}(\mathcal{P}(\aleph_0)))=\bet_3"></p>
+  <p class="sub">Every possible subset of <span class="k" data-tex="\bet_2"></span>, with cardinality up to <span class="k" data-tex="\bet_2"></span>.</p>
+  <p class="instr">Scroll to travel, click a ringed star to see how big it is.</p>
+  <div class="frame" data-live="u3"><canvas id="u3" style="height:560px"></canvas></div>
+  <p class="hint" id="h3">&nbsp;</p>
+</section>
+
+<section>
+  <p class="tex" data-tex="\bigcup_{n<\omega}\bet_n=\bet_\omega"></p>
+  <p class="sub">Every level of the tower at once, collected into a single set.</p>
+  <p class="mid">This is a union of all our previous power sets, rather than itself being a power set.</p>
+  <p class="mid">Think of it like <span class="k" data-tex="\aleph_0"></span>, but each point is an infinite cardinality rather than a finite number.</p>
+  <p class="instr">Scroll to move through the tower, click a level to see which set it is.</p>
+  <div class="frame" data-live="tower"><canvas id="tower" style="height:460px"></canvas></div>
+  <p class="hint" id="ht">&nbsp;</p>
+</section>
+
+<section>
+  <p class="tex" data-tex="\aleph\;\;\text{and}\;\;\bet"></p>
+  <p class="sub">There are two conventions for labelling infinite sets, and they may or may not line up.</p>
+  <p class="mid">The alephs (<span class="k" data-tex="\aleph"></span>) are every infinite size there is, with each one being the next size up. The beths (<span class="k" data-tex="\beth"></span>) are what you get by repeatedly taking power sets.</p>
+  <p class="mid">Every beth is equal to one of the alephs. Nobody can prove which. Saying that <span class="k" data-tex="\aleph_1=\bet_1"></span> is the continuum hypothesis, and it can be neither proved nor disproved.</p>
+  <div class="void" id="void">
+    <div class="lad ladA" id="ladA"></div>
+    <div class="eq" id="eq"></div>
+    <div class="lad ladB" id="ladB"></div>
+    <div class="eq0" id="eq0"></div>
+  </div>
+</section>
+
+</div>
+
+<div class="deep">
+<div class="wrap">
+  <h2 class="bighead">Large cardinals</h2>
+  <p class="sub white">These are to the infinite sizes what the first infinity, <span class="k" data-tex="\aleph_0"></span>, is to the finite ones.</p>
+  <p class="mid"><span class="k" data-tex="\aleph_0"></span> cannot be reached by any amount of taking power sets and unions of finite sets.</p>
+  <p class="mid">Large cardinals cannot be reached by any amount of taking power sets and unions of the infinite sets we have already come across.</p>
+  <p class="mid" style="margin-bottom:80px">Whether any of them exist cannot be settled by the axioms of set theory (ZFC). Each one is an extra axiom you either adopt or don't.</p>
+
+  <section>
+    <p class="tex" data-tex="\text{inaccessible cardinals}"></p>
+    <p class="sub">The smallest large cardinal.</p>
+    <p class="sub">Take the union of everything we have so far.</p>
+    <p class="mid">The light outside cannot be reached from inside, however long you carry on. An inaccessible cardinal is an infinite size so vast that it cannot be reached by taking unions and power sets of anything that has come before.</p>
+    <p class="instr">Scroll and click inside, or click the light.</p>
+    <div class="frame" data-live="wall"><canvas id="wall" style="height:560px"></canvas></div>
+    <p class="hint" id="hw">&nbsp;</p>
+  </section>
+
+  <section>
+    <p class="tex" data-tex="\text{weakly compact cardinals}"></p>
+    <p class="sub">Pick an uncountable infinite cardinal.</p>
+    <p class="sub">Colour every pair of subsets of our cardinal red or blue, however you like.</p>
+    <p class="mid">If somewhere inside there is a whole universe of the same size as our original cardinal where everything came out one colour, then our original cardinal is weakly compact.</p>
+    <p class="instr">Scroll to travel, click a constellation, or click inside the red circle to see what is really in it.</p>
+    <div class="frame" data-live="wc"><canvas id="wc" style="height:600px"></canvas></div>
+    <p class="hint" id="hwc">&nbsp;</p>
+  </section>
+
+  <section>
+    <p class="tex" data-tex="\text{measurable cardinals}"></p>
+    <p class="sub">The whole circle represents κ, a measurable cardinal.</p>
+    <p class="mid">Every subset of κ is either big or small, never both. The whole is big, each single star is small, and any fewer than κ small sets combine into a small one.</p>
+    <p class="instr">Click regions to combine them.</p>
+    <div class="frame" data-live="meas"><canvas id="meas" style="height:560px"></canvas></div>
+    <p class="hint" id="hm">&nbsp;</p>
+  </section>
+
+  <section>
+    <p class="tex" data-tex="\text{strong, supercompact, huge}"></p>
+    <p class="sub">A map from the universe into itself that isn't the identity and keeps every statement true.</p>
+    <p class="mid">How far up it agrees with the universe is how strong the cardinal is.</p>
+    <p class="instr">Click one.</p>
+    <div class="frame" data-live="refl"><canvas id="refl" style="height:520px"></canvas></div>
+    <p class="hint" id="hr">&nbsp;</p>
+  </section>
+
+  <section>
+    <p class="tex" data-tex="\text{all of them}"></p>
+    <div class="names" id="names"></div>
+  </section>
+
+  <section id="sec-rein">
+    <p class="tex" data-tex="\text{Reinhardt}"></p>
+    <p class="sub white bold" style="margin-bottom:18px">Inconsistent with ZFC.</p>
+    <p class="mid" style="margin-bottom:18px">A map j from the universe into itself, not the identity, which keeps every statement true, and whose target is the whole universe rather than some part of it.</p>
+    <p class="mid" style="margin-bottom:18px">Every cardinal above measurable is graded by how much of the universe its map reaches. This one reaches all of it.</p>
+    <p class="instr bold" style="margin-bottom:24px">Kunen proved in 1971 that there is no such map.</p>
+    <div class="frame" data-live="endc"><canvas id="endc" style="height:460px"></canvas></div>
+  </section>
+</div>
+</div>
+
+<div class="end"><div class="endinner"><p id="sig">by Milette Gillow</p></div></div>
+
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],macros:{bet:['{\\small\\beth}',0],cee:['{\\large\\mathfrak{c}}',0]}},svg:{fontCache:'local'},options:{enableAssistiveMml:false,menuOptions:{settings:{assistiveMml:false}}},startup:{typeset:false}};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" id="MathJax-script" async></script>
+<script>
+const GOLD=[201,184,120], IV=[243,239,226], RED=[214,88,72], BLU=[110,160,225], PANEL='#080e1e', DEEP='#04060d';
+function dpr(){return Math.min(2,window.devicePixelRatio||1);}
+function rng(s){let v=(s>>>0)||1;return()=>{v=(v*16807)%2147483647;return v/2147483647;};}
+function hash(a,b,c,d){let h=2166136261;[a,b,c,d].forEach(n=>{h^=(n|0);h=Math.imul(h,16777619);});return h>>>0;}
+function rgba(c,a){return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')';}
+function mixc(t){return [Math.round(255+(GOLD[0]-255)*t),Math.round(255+(GOLD[1]-255)*t),Math.round(255+(GOLD[2]-255)*t)];}
+function tex(el,s){
+  if(!el) return;
+  try{
+    if(window.MathJax&&MathJax.tex2svg){
+      el.replaceChildren(MathJax.tex2svg(s,{display:false}));
+      return;
+    }
+  }catch(e){}
+  el.textContent=s.replace(/\\[a-zA-Z]+|[{}]/g,'').trim();
+}
+function nebula(x,w,h,dark){
+  const g=x.createRadialGradient(w*0.42,h*0.36,10,w*0.5,h*0.5,Math.max(w,h)*0.8);
+  g.addColorStop(0,dark?'rgba(20,30,60,0.4)':'rgba(30,44,86,0.5)');
+  g.addColorStop(1,'rgba(0,0,0,0)');
+  x.fillStyle=g; x.fillRect(0,0,w,h);
+}
+function setup(id,dark){
+  const c=document.getElementById(id), d=dpr(), w=c.clientWidth, h=c.clientHeight;
+  c.width=Math.max(1,w*d); c.height=Math.max(1,h*d);
+  const x=c.getContext('2d'); x.setTransform(d,0,0,d,0,0);
+  x.fillStyle=dark?DEEP:PANEL; x.fillRect(0,0,w,h); nebula(x,w,h,dark);
+  return [x,w,h,c];
+}
+
+/* finite */
+const FIN={t:0,rows:[],pick:-1}, FR=0.9, FP=0.86;
+function drawFinite(){
+  const [x,w,h]=setup('finite');
+  const YINF=h-40, TOP=104, D=YINF-TOP, WMAX=w*0.44, f=FIN.t;
+  FIN.rows=[];
+  if(f<0.6){
+    const a=1-f/0.6, on0=FIN.pick===0;
+    if(on0){ x.shadowColor=rgba(GOLD,0.95); x.shadowBlur=18; }
+    x.fillStyle=on0?rgba(GOLD,a):rgba(mixc(0),a);
+    x.textAlign='center';
+    x.font='28px "Playfair Display",Georgia,serif';
+    x.fillText('{ }',w/2,44);
+    x.shadowBlur=0; x.textAlign='start';
+    FIN.rows.push({sy:38,n:0});
+  }
+  const n0=Math.max(1,Math.ceil(f+1));
+  for(let n=n0;n<n0+90;n++){
+    const j=n-1-f; if(j<0) continue;
+    const sy=YINF-D*Math.pow(FR,j);
+    if(sy>YINF-0.5) break;
+    const half=WMAX*(1-Math.pow(FP,j+1));
+    const cnt=n, sp=cnt>1?(2*half/(cnt-1)):0;
+    let rad=cnt>1?Math.min(5,sp*0.32):5;
+    rad=Math.max(0.25,Math.min(rad,5.4*Math.pow(0.9,j)));
+    const fade=Math.max(0,Math.min(1,(YINF-sy)/90));
+    if(fade<=0.02) continue;
+    FIN.rows.push({sy:sy,n:n});
+    const on=FIN.pick===n;
+    if(on){ x.shadowColor=rgba(GOLD,0.95); x.shadowBlur=16; }
+    x.fillStyle=on?rgba(GOLD,fade):rgba(mixc(Math.min(1,j/13)),fade);
+    if(sp>0&&sp<1.1) x.fillRect(w/2-half,sy-rad,2*half,rad*2);
+    else for(let i=0;i<cnt;i++){
+      const px=cnt===1?w/2:(w/2-half+i*sp);
+      x.beginPath(); x.arc(px,sy,rad,0,7); x.fill();
+    }
+    x.shadowBlur=0;
+  }
+}
+
+/* omega */
+const OM={s:1,dots:[],pick:-1}, OQ=0.93;
+function drawOmega(){
+  const [x,w,h]=setup('omega');
+  const L=40,R=w-40, span=R-L, s=OM.s;
+  OM.dots=[];
+  let i0=0;
+  while(i0<20000 && span*Math.pow(OQ,i0)*s > span+40) i0++;
+  for(let i=i0;i<i0+1400;i++){
+    const u=span*Math.pow(OQ,i)*s, px=R-u;
+    if(px>R+20) continue;
+    if(px<L-80) break;
+    const near=Math.max(0,Math.min(1,u/span));
+    const rad=Math.max(0.5,1.4+3.2*near);
+    const on=OM.pick===i;
+    if(on){ x.shadowColor=rgba(GOLD,1); x.shadowBlur=28; }
+    x.fillStyle=on?rgba(GOLD,1):rgba(mixc(Math.min(1,(i-i0)/500)),1);
+    x.beginPath(); x.arc(px,h/2,on?rad+1.6:rad,0,7); x.fill();
+    x.shadowBlur=0;
+    OM.dots.push({px:px,i:i});
+  }
+}
+
+/* universes */
+function makeUniverse(id,rootSeed,maxDepth,hintId,opts){
+  opts=opts||{};
+  const c=document.getElementById(id);
+  const st={cam:{x:0,y:0,z:1},cam2:{x:0,y:0,z:0.42},stack:[],snaps:[],rendered:[],rendered2:[],pick:null,pick2:null,focus:false,inner:null,lit:false};
+  const cache=new Map(), OCT=8;
+  function cell(k,i,j,seed,dep){
+    const kk=((k%OCT)+OCT)%OCT, key=kk+':'+i+':'+j+':'+seed+':'+dep;
+    let v=cache.get(key); if(v) return v;
+    const r=rng(hash(seed,kk*7919,i*104729,j*15485863));
+    const stars=[], sets=[], cs=[];
+    for(let q=0,n=1+((r()*3)|0);q<n;q++) cs.push([r(),r()]);
+    for(let q=0;q<20;q++){
+      const cl=cs[(r()*cs.length)|0];
+      stars.push({x:cl[0]+(r()+r()+r()-1.5)*0.42,y:cl[1]+(r()+r()+r()-1.5)*0.42,ring:false,sub:0,cid:-1});
+    }
+    for(let q=0,n=3+((r()*2)|0);q<n;q++){
+      if(r()<0.3){
+        const A=cs[(r()*cs.length)|0]; let dd=0.42, ang=r()*6.283; const nodes=[];
+        for(let m=0;m<22;m++){
+          ang+=(r()-0.5)*0.9*Math.pow(0.88,m);
+          stars.push({x:A[0]+Math.cos(ang)*dd,y:A[1]+Math.sin(ang)*dd,ring:false,sub:0,cid:sets.length});
+          nodes.push(stars.length-1); dd*=0.86;
+        }
+        sets.push({nodes:nodes,inf:true,z:0.3+r()*0.7,red:r()<0.5,split:0});
+      } else {
+        const nn=2+((r()*6)|0), hub=(r()*stars.length)|0, near=[];
+        for(let m=0;m<stars.length;m++){
+          if(m===hub) continue;
+          const dx=stars[m].x-stars[hub].x, dy=stars[m].y-stars[hub].y;
+          near.push([m,dx*dx+dy*dy]);
+        }
+        near.sort((a,b)=>a[1]-b[1]);
+        const nodes=[hub];
+        for(let m=0;m<nn-1&&m<near.length;m++) nodes.push(near[(m*2)%near.length][0]);
+        nodes.forEach(z=>{ if(stars[z].cid<0) stars[z].cid=sets.length; });
+        sets.push({nodes:nodes,inf:false,z:0.3+r()*0.7,red:r()<0.5,split:1+((r()*Math.max(1,nodes.length-1))|0)});
+      }
+    }
+    stars.forEach((s2,idx)=>{
+      if(s2.cid<0){ s2.cid=sets.length; sets.push({nodes:[idx],inf:false,z:0.3,red:r()<0.5,split:0}); }
+      if(dep>0 && r()<0.07){ s2.ring=true; s2.sub=(dep>1&&r()<0.5)?2:1; }
+    });
+    v={stars:stars,sets:sets};
+    if(cache.size>3000) cache.clear();
+    cache.set(key,v); return v;
+  }
+  function top(){ return st.stack.length? st.stack[st.stack.length-1] : {seed:rootSeed,dep:maxDepth}; }
+
+  function paint(x,w,h,cam,seed,dep,forceRed,bucket,ds){
+    ds=ds||1;
+    nebula(x,w,h,opts.dark);
+    bucket.length=0; let hi=null;
+    const z=cam.z;
+    const cx=w/2, cy=h/2;
+    const kmin=Math.floor(Math.log(z/2.2)/Math.log(3));
+    for(let k=kmin;k<kmin+3;k++){
+      const size=360*Math.pow(3,-k), ap=size*z/360;
+      let a=1;
+      if(ap>1.6) a=Math.max(0,1-(ap-1.6)/1.4);
+      if(ap<0.34) a=Math.max(0,(ap-0.18)/0.16);
+      if(a<=0.02) continue;
+      const i0=Math.floor((cam.x-w/2/z)/size), i1=Math.floor((cam.x+w/2/z)/size);
+      const j0=Math.floor((cam.y-h/2/z)/size), j1=Math.floor((cam.y+h/2/z)/size);
+      if((i1-i0)>50||(j1-j0)>50) continue;
+      for(let i=i0;i<=i1;i++) for(let j=j0;j<=j1;j++){
+        const cl=cell(k,i,j,seed,dep);
+        const S=cl.stars.map(s2=>[((i+s2.x)*size-cam.x)*z+cx,((j+s2.y)*size-cam.y)*z+cy]);
+        cl.stars.forEach((s2,idx)=>{
+          const p=S[idx];
+          if(p[0]<-30||p[0]>w+30||p[1]<-30||p[1]>h+30) return;
+          x.fillStyle=rgba(forceRed?RED:IV,a*(forceRed?0.85:0.5));
+          x.beginPath(); x.arc(p[0],p[1],1.5*ds,0,7); x.fill();
+          bucket.push({sx:p[0],sy:p[1],k:k,i:i,j:j,idx:idx,ring:s2.ring,sub:s2.sub,cid:s2.cid});
+          if(s2.ring){
+            x.strokeStyle=rgba(GOLD,a*0.85); x.lineWidth=1;
+            x.beginPath(); x.arc(p[0],p[1],7,0,7); x.stroke();
+          }
+        });
+        cl.sets.map((o,si)=>({o:o,si:si})).sort((p,q)=>p.o.z-q.o.z).forEach(it=>{
+          const o=it.o;
+          const pk=(bucket===st.rendered2)?st.pick2:st.pick;
+          const hit=pk&&pk.k===k&&pk.i===i&&pk.j===j&&pk.cid===it.si;
+          if(hit){ hi={o:o,S:S}; return; }
+          if(o.nodes.length<2) return;
+          let col=o.inf?IV:GOLD;
+          if(opts.wc) col=forceRed?RED:(o.red?RED:BLU);
+          const al=a*(0.18+o.z*0.55);
+          x.strokeStyle=rgba(col,al); x.lineWidth=(0.6+o.z)*ds;
+          x.beginPath();
+          o.nodes.forEach((nn,m)=>{const p=S[nn]; m?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]);});
+          x.stroke();
+          x.fillStyle=rgba(col,al);
+          o.nodes.forEach((nn,m)=>{const p=S[nn]; x.beginPath(); x.arc(p[0],p[1],(o.inf?Math.max(0.8,2.3*Math.pow(0.93,m)):2.7)*ds,0,7); x.fill();});
+        });
+      }
+    }
+    if(hi){
+      const o=hi.o, S=hi.S;
+      let col=o.inf?IV:GOLD;
+      if(opts.wc) col=forceRed?RED:(o.red?RED:BLU);
+      let mnx=1e9,mxx=-1e9,mny=1e9,mxy=-1e9;
+      o.nodes.forEach(nn=>{const p=S[nn];mnx=Math.min(mnx,p[0]);mxx=Math.max(mxx,p[0]);mny=Math.min(mny,p[1]);mxy=Math.max(mxy,p[1]);});
+      const ext=Math.max(mxx-mnx,mxy-mny);
+      x.shadowColor=rgba(col,0.95); x.shadowBlur=18;
+      if(o.nodes.length>1){
+        x.strokeStyle=rgba(col,1); x.lineWidth=Math.max(2,Math.min(4,ext/60));
+        x.beginPath();
+        o.nodes.forEach((nn,m)=>{const p=S[nn]; m?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]);});
+        x.stroke();
+      }
+      x.fillStyle=rgba(col,1);
+      o.nodes.forEach(nn=>{const p=S[nn]; x.beginPath(); x.arc(p[0],p[1],Math.max(3.4,Math.min(6,ext/40)),0,7); x.fill();});
+      x.shadowBlur=0;
+    }
+  }
+
+  function draw(){
+    const d=dpr(), w=c.clientWidth, h=c.clientHeight;
+    if(!w||!h) return;
+    c.width=w*d; c.height=h*d;
+    const x=c.getContext('2d'); x.setTransform(d,0,0,d,0,0);
+    x.fillStyle=opts.dark?DEEP:PANEL; x.fillRect(0,0,w,h);
+    const inside=st.stack.length>0;
+    const cx=opts.skew?w*0.34:w/2, cy=h/2;
+    const R=opts.circle?Math.min(h/2-16,w*(opts.skew?0.28:0.37)):Math.min(w,h)/2-8;
+    const clip=opts.circle||inside;
+    const iC=opts.wc?{x:cx+R*0.34,y:cy+R*0.2,r:R*0.3}:null;
+    st.inner=iC;
+    const T=top();
+    if(inside&&!opts.circle){
+      const snap=st.snaps[st.snaps.length-1];
+      if(snap&&snap.width&&snap.height){ x.filter='blur(4px)'; x.drawImage(snap,0,0,w,h); x.filter='none'; }
+      x.fillStyle='rgba(3,6,14,0.66)'; x.fillRect(0,0,w,h);
+    }
+    if(opts.wc){
+      const outer=document.createElement('canvas');
+      outer.width=Math.max(1,c.width); outer.height=Math.max(1,c.height);
+      const oc=outer.getContext('2d'); oc.setTransform(d,0,0,d,0,0);
+      oc.fillStyle=DEEP; oc.fillRect(0,0,w,h);
+      oc.save(); oc.beginPath(); oc.arc(cx,cy,R,0,7); oc.clip();
+      oc.fillStyle='#050810'; oc.fillRect(cx-R,cy-R,R*2,R*2);
+      paint(oc,w,h,st.cam,T.seed,T.dep,false,st.rendered);
+      oc.restore();
+      if(st.focus){
+        x.filter='blur(5px)'; x.drawImage(outer,0,0,w,h); x.filter='none';
+        x.fillStyle='rgba(2,4,10,0.74)'; x.fillRect(0,0,w,h);
+      } else {
+        x.drawImage(outer,0,0,w,h);
+      }
+      const dx2=iC.x-w/2, dy2=iC.y-h/2;
+      x.save();
+      x.beginPath(); x.arc(iC.x,iC.y,iC.r,0,7); x.clip();
+      x.fillStyle='#050810'; x.fillRect(iC.x-iC.r,iC.y-iC.r,iC.r*2,iC.r*2);
+      x.translate(dx2,dy2);
+      paint(x,w,h,st.cam2,T.seed^0x9e3779b9,0,true,st.rendered2,1.55);
+      x.restore();
+      st.rendered2.forEach(o=>{ o.sx+=dx2; o.sy+=dy2; });
+      x.strokeStyle=rgba(RED,st.focus?1:0.9); x.lineWidth=st.focus?2.2:1.6;
+      x.beginPath(); x.arc(iC.x,iC.y,iC.r,0,7); x.stroke();
+      x.strokeStyle=rgba(GOLD,st.focus?0.35:0.9); x.lineWidth=1.6;
+      x.beginPath(); x.arc(cx,cy,R,0,7); x.stroke();
+      return;
+    }
+    x.save();
+    if(clip){ x.beginPath(); x.arc(cx,cy,R,0,7); x.clip(); x.fillStyle=opts.dark?'#050810':'#060b18'; x.fillRect(cx-R,cy-R,R*2,R*2); }
+    paint(x,w,h,st.cam,T.seed,T.dep,false,st.rendered);
+    x.restore();
+    if(clip){
+      x.strokeStyle=rgba(GOLD,0.9); x.lineWidth=1.6;
+      x.beginPath(); x.arc(cx,cy,R,0,7); x.stroke();
+    }
+    if(inside&&!opts.circle){
+      x.lineWidth=1.4; x.strokeStyle=rgba(GOLD,0.9);
+      x.beginPath(); x.moveTo(w-34,20); x.lineTo(w-20,34); x.moveTo(w-20,20); x.lineTo(w-34,34); x.stroke();
+    }
+    if(opts.outside){
+      const ox2=Math.min(w-46,cx+R+130), lit=st.lit;
+      x.shadowColor=rgba(GOLD,1);
+      if(lit){
+        for(let g=0;g<3;g++){ x.shadowBlur=70; x.fillStyle=rgba(GOLD,1);
+          x.beginPath(); x.arc(ox2,cy,7.5,0,7); x.fill(); }
+      } else {
+        x.shadowBlur=26; x.fillStyle=rgba(GOLD,0.92);
+        x.beginPath(); x.arc(ox2,cy,6,0,7); x.fill();
+      }
+      x.shadowBlur=0;
+      st.outside={px:ox2,py:cy};
+    }
+  }
+
+  function sizeTex(o){
+    if(o.inf) return '\\{\\aleph_0,\\aleph_0\\}';
+    const a=Math.max(1,o.split||1), b=Math.max(1,o.nodes.length-a);
+    return '\\{'+a+','+b+'\\}';
+  }
+  c.addEventListener('wheel',ev=>{
+    if(LIVE!==id) return;
+    ev.preventDefault();
+    const b=c.getBoundingClientRect(), w=c.clientWidth, h=c.clientHeight;
+    const px=ev.clientX-b.left, py=ev.clientY-b.top;
+    let cam=st.cam, ax=px-w/2, ay=py-h/2;
+    if(opts.wc&&st.inner&&Math.hypot(px-st.inner.x,py-st.inner.y)<st.inner.r){
+      cam=st.cam2; ax=px-st.inner.x; ay=py-st.inner.y;
+    }
+    const k=Math.exp(-ev.deltaY*0.0018), nz=cam.z*k;
+    cam.x+=ax/cam.z-ax/nz; cam.y+=ay/cam.z-ay/nz; cam.z=nz;
+    draw();
+  },{passive:false});
+  c.addEventListener('click',ev=>{
+    const b=c.getBoundingClientRect(), mx=ev.clientX-b.left, my=ev.clientY-b.top;
+    const w=c.clientWidth, h=c.clientHeight;
+    if(opts.outside && st.outside && Math.hypot(mx-st.outside.px,my-st.outside.py)<34){
+      st.lit=!st.lit; draw();
+      if(st.lit) tex(document.getElementById(hintId),'\\text{the first inaccessible cardinal}');
+      else document.getElementById(hintId).innerHTML='&nbsp;';
+      return;
+    }
+    if(opts.wc && st.inner){
+      const inIn=Math.hypot(mx-st.inner.x,my-st.inner.y)<st.inner.r;
+      if(!st.focus && inIn){ st.focus=true; st.pick=null; st.pick2=null; draw();
+        tex(document.getElementById(hintId),'\\text{everything in here is red}'); return; }
+      if(st.focus && !inIn){ st.focus=false; st.pick=null; st.pick2=null; draw();
+        document.getElementById(hintId).innerHTML='&nbsp;'; return; }
+      if(st.focus && inIn){
+        let b2=null,d2=1e9;
+        st.rendered2.forEach(o=>{const dd=(o.sx-mx)*(o.sx-mx)+(o.sy-my)*(o.sy-my); if(dd<d2){d2=dd;b2=o;}});
+        if(!b2) return;
+        const T2=top(), cl2=cell(b2.k,b2.i,b2.j,T2.seed^0x9e3779b9,0), o2=cl2.sets[b2.cid];
+        st.pick2={k:b2.k,i:b2.i,j:b2.j,cid:b2.cid}; draw();
+        tex(document.getElementById(hintId),'\\text{a red pair of size }'+sizeTex(o2));
+        return;
+      }
+    }
+    if(st.stack.length&&!opts.circle){
+      const R=Math.min(w,h)/2-8, dx=mx-w/2, dy=my-h/2;
+      if(dx*dx+dy*dy>R*R){ reset(); return; }
+    }
+    let best=null,bd=1e9;
+    st.rendered.forEach(o=>{const dd=(o.sx-mx)*(o.sx-mx)+(o.sy-my)*(o.sy-my); if(dd<bd){bd=dd;best=o;}});
+    if(!best) return;
+    if(best.ring&&bd<600&&opts.circle){
+      st.pick={k:best.k,i:best.i,j:best.j,cid:best.cid};
+      draw();
+      tex(document.getElementById(hintId),'\\text{a subset of uncountable cardinality}');
+      return;
+    }
+    if(best.ring&&bd<600&&!opts.circle){
+      const snap=document.createElement('canvas');
+      snap.width=c.width; snap.height=c.height;
+      if(snap.width&&snap.height) snap.getContext('2d').drawImage(c,0,0);
+      st.snaps.push(snap);
+      st.stack.push({seed:hash(top().seed,best.k,best.i*31+best.idx,best.j*17),dep:best.sub-1});
+      st.cam={x:0,y:0,z:1}; st.pick=null; draw();
+      tex(document.getElementById(hintId),'\\text{subset of size }\\bet_{'+best.sub+'}');
+      return;
+    }
+    const T=top(), cl=cell(best.k,best.i,best.j,T.seed,T.dep), o=cl.sets[best.cid];
+    st.pick={k:best.k,i:best.i,j:best.j,cid:best.cid};
+    draw();
+    if(opts.wc){
+      const red=st.focus?true:o.red;
+      tex(document.getElementById(hintId),'\\text{a '+(red?'red':'blue')+' pair of size }'+sizeTex(o));
+    } else {
+      tex(document.getElementById(hintId), o.inf
+        ? '\\text{subset of size }\\aleph_0:\\;\\{n_1,n_2,n_3,\\ldots\\}'
+        : '\\text{subset of size }'+o.nodes.length+':\\;\\{'+Array.from({length:Math.min(4,o.nodes.length)},(_,i)=>'n_'+(i+1)).join(',')+'\\}');
+    }
+  });
+  function reset(){
+    st.stack=[]; st.snaps=[]; st.cam={x:0,y:0,z:1}; st.pick=null; st.focus=false; draw();
+    document.getElementById(hintId).innerHTML='&nbsp;';
+  }
+  return {draw:draw,pop:reset};
+}
+
+/* tower */
+const TW={s:1,circles:[],pick:-1}, TQ=0.63, TGAP=1.62;
+function drawTower(){
+  const [x,w,h]=setup('tower');
+  const R0=Math.min(110,w*0.14), Y0=14+R0, CYINF=Y0+R0*TGAP/(1-TQ), s=TW.s;
+  TW.circles=[];
+  let k0=0;
+  while(k0<4000 && CYINF-(R0*TGAP*Math.pow(TQ,k0)/(1-TQ))*s < -60) k0++;
+  for(let k=k0;k<k0+26;k++){
+    const cyk=CYINF-(R0*TGAP*Math.pow(TQ,k)/(1-TQ));
+    const cy=CYINF-(CYINF-cyk)*s, R=R0*Math.pow(TQ,k)*s;
+    if(cy-R>h+60) break;
+    if(R<0.6||cy+R<-60) continue;
+    const on=TW.pick===k, r=rng(500+((k%9)*77));
+    x.save();
+    x.beginPath(); x.arc(w/2,cy,R,0,7); x.clip();
+    x.fillStyle='#060b18'; x.fillRect(w/2-R,cy-R,R*2,R*2);
+    const pts=[];
+    for(let i=0;i<70;i++){ const a=r()*6.283, dd=Math.sqrt(r())*R; pts.push([w/2+Math.cos(a)*dd,cy+Math.sin(a)*dd]); }
+    x.fillStyle=rgba(IV,on?0.85:0.55);
+    pts.forEach(p=>{x.beginPath();x.arc(p[0],p[1],Math.max(0.4,R*0.012),0,7);x.fill();});
+    if(R>24){
+      x.strokeStyle=rgba(GOLD,on?1:0.7); x.lineWidth=Math.max(0.5,R*0.008);
+      for(let q=0;q<2;q++){
+        const ch=[];
+        for(let i=0;i<4;i++) ch.push(pts[(r()*pts.length)|0]);
+        x.beginPath(); ch.forEach((p,m)=>m?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1])); x.stroke();
+      }
+    }
+    x.restore();
+    if(on){ x.shadowColor=rgba(GOLD,0.9); x.shadowBlur=20; }
+    x.strokeStyle=rgba(GOLD,on?1:0.7); x.lineWidth=on?2:Math.max(0.4,Math.min(1.4,R*0.012));
+    x.beginPath(); x.arc(w/2,cy,R,0,7); x.stroke();
+    x.shadowBlur=0;
+    TW.circles.push({cy:cy,R:R,k:k});
+  }
+}
+
+/* measurable */
+const MS={regions:[],sel:[],whole:false,geom:null,dots:null};
+function drawMeas(){
+  const [x,w,h]=setup('meas',true);
+  const cx=w/2, cy=h/2, R=Math.min(h/2-30,w*0.33);
+  MS.geom={cx:cx,cy:cy,R:R};
+  if(!MS.dots){
+    const r=rng(8181); MS.dots=[];
+    for(let i=0;i<820;i++){ const a=r()*6.283, d=Math.sqrt(r())*R; MS.dots.push([cx+Math.cos(a)*d,cy+Math.sin(a)*d,0.3+r()*0.4]); }
+  }
+  if(!MS.regions.length){
+    const r2=rng(4242);
+    for(let q=0;q<7;q++){
+      const a=r2()*6.283, d=Math.sqrt(r2())*R*0.5;
+      MS.regions.push({x:cx+Math.cos(a)*d,y:cy+Math.sin(a)*d,r:28+r2()*52,big:q<2,seed:q});
+    }
+  }
+  x.save();
+  x.beginPath(); x.arc(cx,cy,R,0,7); x.clip();
+  x.fillStyle='#050810'; x.fillRect(cx-R,cy-R,R*2,R*2);
+  if(MS.whole){ x.shadowColor=rgba(GOLD,0.7); x.shadowBlur=10; }
+  MS.dots.forEach(p=>{ x.fillStyle=rgba(MS.whole?GOLD:IV,MS.whole?0.9:p[2]); x.beginPath(); x.arc(p[0],p[1],MS.whole?1.7:1.2,0,7); x.fill(); });
+  x.shadowBlur=0;
+  MS.regions.forEach((g,i)=>{
+    const on=MS.sel.indexOf(i)>=0, col=g.big?GOLD:IV;
+    x.strokeStyle=rgba(col,on?1:0.5); x.lineWidth=on?2:1;
+    x.beginPath();
+    for(let t=0;t<=6.4;t+=0.22){
+      const wob=1+0.16*Math.sin(t*3+g.seed);
+      const px=g.x+Math.cos(t)*g.r*wob, py=g.y+Math.sin(t)*g.r*wob;
+      t?x.lineTo(px,py):x.moveTo(px,py);
+    }
+    x.closePath(); x.stroke();
+    x.fillStyle=rgba(col,on?0.22:0.07); x.fill();
+  });
+  x.restore();
+  if(MS.whole){ x.shadowColor=rgba(GOLD,0.9); x.shadowBlur=24; }
+  x.strokeStyle=rgba(GOLD,MS.whole?1:0.85); x.lineWidth=MS.whole?2.6:1.6;
+  x.beginPath(); x.arc(cx,cy,R,0,7); x.stroke();
+  x.shadowBlur=0;
+}
+
+/* embeddings */
+const RF={pick:-1,c:[]};
+function drawRefl(){
+  const [x,w,h]=setup('refl',true);
+  const cy=h/2, n=4, R=72;
+  RF.c=[];
+  for(let k=0;k<n;k++){
+    const cx=110+k*((w-220)/(n-1)), cover=0.25+k*0.22, on=RF.pick===k, r=rng(700+k*29);
+    x.save();
+    x.beginPath(); x.arc(cx,cy,R,0,7); x.clip();
+    x.fillStyle='#050810'; x.fillRect(cx-R,cy-R,R*2,R*2);
+    if(on){ x.shadowColor=rgba(GOLD,0.8); x.shadowBlur=10; }
+    for(let i=0;i<180;i++){
+      const a=r()*6.283, d=Math.sqrt(r())*R;
+      const px=cx+Math.cos(a)*d, py=cy+Math.sin(a)*d;
+      const covered=(py-(cy-R))/(2*R) < cover;
+      x.fillStyle=covered?rgba(GOLD,on?1:0.7):rgba(IV,on?0.6:0.35);
+      x.beginPath(); x.arc(px,py,covered&&on?2.1:1.2,0,7); x.fill();
+    }
+    x.shadowBlur=0;
+    x.strokeStyle=rgba(GOLD,0.5); x.setLineDash([3,3]); x.lineWidth=0.8;
+    const yy=cy-R+2*R*cover;
+    x.beginPath(); x.moveTo(cx-R,yy); x.lineTo(cx+R,yy); x.stroke();
+    x.setLineDash([]);
+    x.restore();
+    if(on){x.shadowColor=rgba(GOLD,0.9);x.shadowBlur=18;}
+    x.strokeStyle=rgba(GOLD,on?1:0.75); x.lineWidth=on?2:1.2;
+    x.beginPath(); x.arc(cx,cy,R,0,7); x.stroke();
+    x.shadowBlur=0;
+    RF.c.push({cx:cx,cy:cy,R:R});
+    if(k<n-1){
+      const nx=110+(k+1)*((w-220)/(n-1));
+      x.strokeStyle=rgba(IV,0.3); x.lineWidth=0.8;
+      x.beginPath(); x.moveTo(cx+R+6,cy); x.lineTo(nx-R-10,cy); x.stroke();
+      x.beginPath(); x.moveTo(nx-R-16,cy-4); x.lineTo(nx-R-10,cy); x.lineTo(nx-R-16,cy+4); x.stroke();
+    }
+  }
+}
+
+/* reinhardt */
+const RE={rot:0,on:false,pts:null,geom:null};
+function drawEnd(){
+  const [x,w,h]=setup('endc',true);
+  const cx=w/2, cy=h/2, R=Math.min(h/2-40,150);
+  RE.geom={cx:cx,cy:cy,R:R};
+  if(!RE.pts){
+    const r=rng(99); RE.pts=[];
+    for(let i=0;i<700;i++){
+      const u=r()*2-1, t=r()*6.283, s=Math.sqrt(1-u*u);
+      RE.pts.push([s*Math.cos(t),s*Math.sin(t),u]);
+    }
+  }
+  const ca=Math.cos(RE.rot), sa=Math.sin(RE.rot);
+  if(RE.on){ x.shadowColor=rgba(GOLD,0.8); x.shadowBlur=12; }
+  RE.pts.forEach(p=>{
+    const X=p[0]*ca-p[2]*sa, Z=p[0]*sa+p[2]*ca, Y=p[1];
+    const dep=(Z+1)/2;
+    x.fillStyle=rgba(GOLD,(RE.on?0.45:0.25)+dep*0.55);
+    x.beginPath(); x.arc(cx+X*R,cy+Y*R,0.7+dep*1.5,0,7); x.fill();
+  });
+  x.shadowBlur=0;
+  x.lineWidth=1.8;
+  for(let i=0;i<26;i++){
+    const a0=i*(6.283/26), a1=a0+6.283/26*0.55;
+    x.strokeStyle=rgba(GOLD,(RE.on?0.5:0.28)+0.4*((i*7)%5)/5);
+    x.beginPath(); x.arc(cx,cy,R+((i%3)-1)*3,a0,a1); x.stroke();
+  }
+}
+
+/* ladders */
+function ladders(){
+  const A=['\\aleph_0','\\aleph_1','\\aleph_2','\\aleph_3','\\aleph_4','\\aleph_5','\\aleph_6','\\aleph_7','\\vdots',
+           '\\aleph_\\omega','\\aleph_{\\omega+1}','\\vdots','\\aleph_{\\omega\\cdot2}','\\vdots',
+           '\\aleph_{\\omega^2}','\\vdots','\\aleph_{\\omega^\\omega}','\\vdots','\\aleph_{\\varepsilon_0}','\\vdots'];
+  const B=['\\bet_0','\\bet_1','\\bet_2','\\bet_3','\\bet_4','\\bet_5','\\bet_6','\\vdots','\\bet_\\omega','\\vdots'];
+  const la=document.getElementById('ladA'), lb=document.getElementById('ladB'), eq=document.getElementById('eq');
+  const bEls=[];
+  A.forEach((s,i)=>{const el=document.createElement('div');el.style.color='rgb('+mixc(i/(A.length-1)).join(',')+')';la.appendChild(el);tex(el,s);});
+  B.forEach((s,i)=>{const el=document.createElement('div');el.style.color='rgb('+mixc(i/(B.length-1)).join(',')+')';lb.appendChild(el);tex(el,s);bEls.push(el);});
+  tex(eq,'=\\;?');
+  tex(document.getElementById('eq0'),'=');
+  function onScroll(){
+    const v=document.getElementById('void'), b=v.getBoundingClientRect();
+    const q=Math.max(0,Math.min(1,(window.innerHeight-b.top)/(window.innerHeight+b.height)));
+    la.style.transform='translateY(40px)';
+    lb.style.transform='translateY(40px)';
+    bEls.forEach((el,i)=>{ el.style.transform='translateY('+(i*q*95)+'px)'; });
+    eq.style.transform='translateY('+(420+q*200)+'px)';
+    eq.style.opacity=0.18+0.4*Math.abs(Math.sin(q*3.14159));
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+}
+
+const DEFS={
+'inaccessible':'Cannot be reached from below by power sets or unions. Must be uncountable.',
+'Mahlo':'So large that the inaccessibles below it turn up in every unbounded closed set.',
+'weakly compact':'Colour every pair, and a same-size subset comes out all one colour. Must be uncountable.',
+'indescribable':'No statement about it, however complicated, separates it from the cardinals below.',
+'ineffable':'Every labelling of its subsets agrees with itself on a large set.',
+'Ramsey':'Weakly compact strengthened from pairs to groups of any finite size. Must be uncountable.',
+'measurable':'Carries a measure: every subset is big or small, and fewer than \u03BA small ones stay small. Must be uncountable.',
+'strong':'Its embedding agrees with the universe for sets of any chosen rank.',
+'Woodin':'Enough embeddings that every set of reals behaves well. The strength behind determinacy.',
+'superstrong':'Its embedding covers everything below the image of \u03BA itself.',
+'strongly compact':'Any collection of statements with no contradiction among fewer than \u03BA of them has a model. Must be uncountable.',
+'supercompact':'Its embedding agrees with the universe for arbitrarily large collections at once.',
+'extendible':'Every initial chunk of the universe embeds into a larger chunk.',
+'Vop\u011bnka':'In any proper class of structures, one of them embeds into another.',
+'almost huge':'Its embedding is closed under sequences of length just short of the image of \u03BA.',
+'huge':'Its embedding is closed under sequences of length the image of \u03BA.',
+'superhuge':'Huge, with the target pushed arbitrarily far up.',
+'rank-into-rank':'An embedding from a level of the universe into itself.',
+'Reinhardt':'An embedding from the whole universe onto itself.'
+};
+function nameList(){
+  const N=Object.keys(DEFS), box=document.getElementById('names'), els=[];
+  let open=null;
+  N.forEach((s,i)=>{
+    const wrap=document.createElement('div');
+    wrap.className='w';
+    const el=document.createElement('div');
+    el.className='n'; el.textContent=s;
+    el.style.color='rgb('+mixc(i/(N.length-1)).join(',')+')';
+    const d=document.createElement('div');
+    d.className='d'; d.style.display='none'; d.textContent=DEFS[s];
+    el.addEventListener('click',()=>{
+      if(open&&open!==d) open.style.display='none';
+      d.style.display=(d.style.display==='none')?'block':'none';
+      open=d.style.display==='none'?null:d;
+    });
+    wrap.appendChild(el); wrap.appendChild(d);
+    box.appendChild(wrap); els.push(wrap);
+  });
+  function onScroll(){
+    const b=box.getBoundingClientRect();
+    const q=Math.max(0,Math.min(1,(window.innerHeight-b.top)/(window.innerHeight+b.height)));
+    els.forEach((el,i)=>{ el.style.transform='translateY('+(i*q*40)+'px)'; });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+}
+
+function signature(){
+  const end=document.querySelector('.end'), sig=document.getElementById('sig');
+  function onScroll(){
+    const b=end.getBoundingClientRect();
+    const p=Math.max(0,Math.min(1,(-b.top)/(window.innerHeight*0.55)));
+    const H=sig.offsetHeight||34, band=52;
+    const y=Math.round(-band+p*(H+2*band));
+    const m='linear-gradient(180deg, #000 0px, #000 '+y+'px, rgba(0,0,0,0) '+(y+band)+'px)';
+    sig.style.webkitMaskImage=m; sig.style.maskImage=m;
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+}
+
+let LIVE=null;
+function setLive(k){
+  LIVE=k;
+  document.querySelectorAll('.frame').forEach(f=>f.classList.toggle('live',f.dataset.live===k));
+}
+const U={};
+function renderMaths(){
+  document.querySelectorAll('.tex[data-tex]').forEach(el=>{try{tex(el,el.dataset.tex);}catch(e){}});
+  document.querySelectorAll('span.k').forEach(el=>{try{tex(el,el.dataset.tex);}catch(e){}});
+}
+function boot(){
+  renderMaths();
+  drawFinite(); drawOmega(); drawTower(); drawMeas(); drawRefl(); drawEnd();
+  ladders(); nameList(); signature();
+
+  U.u1=makeUniverse('u1',10007,0,'h1');
+  U.u2=makeUniverse('u2',20011,1,'h2');
+  U.u3=makeUniverse('u3',30011,2,'h3');
+  U.wall=makeUniverse('wall',50021,1,'hw',{circle:true,dark:true,outside:true,skew:true});
+  U.wc=makeUniverse('wc',60013,0,'hwc',{circle:true,dark:true,wc:true});
+  ['u1','u2','u3','wall','wc'].forEach(k=>U[k].draw());
+
+  document.querySelectorAll('.frame[data-live]').forEach(f=>{
+    f.addEventListener('click',()=>{ if(LIVE!==f.dataset.live) setLive(f.dataset.live); });
+  });
+
+  const fin=document.getElementById('finite');
+  fin.addEventListener('wheel',ev=>{ if(LIVE!=='finite')return; ev.preventDefault();
+    FIN.t=Math.max(0,FIN.t+ev.deltaY*0.006); drawFinite(); },{passive:false});
+  fin.addEventListener('click',ev=>{
+    const b=fin.getBoundingClientRect(), my=ev.clientY-b.top;
+    let best=null,bd=1e9;
+    FIN.rows.forEach(o=>{const d=Math.abs(o.sy-my); if(d<bd){bd=d;best=o;}});
+    if(!best||bd>22) return;
+    FIN.pick=best.n; drawFinite();
+    tex(document.getElementById('hf'), best.n===0? '\\text{the empty set, of cardinality }0' : '\\text{this row has cardinality }'+best.n);
+  });
+
+  const om=document.getElementById('omega');
+  om.addEventListener('wheel',ev=>{ if(LIVE!=='omega')return; ev.preventDefault();
+    OM.s=Math.max(1,OM.s*Math.exp(ev.deltaY*0.0016)); drawOmega(); },{passive:false});
+  om.addEventListener('click',ev=>{
+    const b=om.getBoundingClientRect(), mx=ev.clientX-b.left;
+    let best=null,bd=1e9;
+    OM.dots.forEach(o=>{const d=Math.abs(o.px-mx); if(d<bd){bd=d;best=o;}});
+    if(!best) return;
+    OM.pick=best.i; drawOmega();
+    tex(document.getElementById('h0'),'\\text{this one represents }'+best.i);
+  });
+
+  const tw=document.getElementById('tower');
+  tw.addEventListener('wheel',ev=>{ if(LIVE!=='tower')return; ev.preventDefault();
+    TW.s=Math.max(1,TW.s*Math.exp(ev.deltaY*0.0016)); drawTower(); },{passive:false});
+  tw.addEventListener('click',ev=>{
+    const b=tw.getBoundingClientRect(), mx=ev.clientX-b.left, my=ev.clientY-b.top, w=tw.clientWidth;
+    let best=null,bd=1e9;
+    TW.circles.forEach(o=>{const d=Math.abs(Math.hypot(mx-w/2,my-o.cy)-o.R); if(d<bd){bd=d;best=o;}});
+    if(!best||bd>60) return;
+    TW.pick=best.k; drawTower();
+    const k=best.k;
+    let s;
+    if(k===0) s='\\aleph_0=\\bet_0=\\omega';
+    else if(k===1) s='\\mathcal{P}(\\aleph_0)=\\bet_1=\\cee';
+    else if(k===2) s='\\mathcal{P}(\\mathcal{P}(\\aleph_0))=\\bet_2';
+    else if(k===3) s='\\mathcal{P}(\\mathcal{P}(\\mathcal{P}(\\aleph_0)))=\\bet_3';
+    else s='\\mathcal{P}^{'+k+'}(\\aleph_0)=\\bet_{'+k+'}';
+    tex(document.getElementById('ht'),s);
+  });
+
+  const ms=document.getElementById('meas');
+  ms.addEventListener('click',ev=>{
+    const b=ms.getBoundingClientRect(), mx=ev.clientX-b.left, my=ev.clientY-b.top;
+    const g=MS.geom;
+    let best=-1;
+    for(let i=MS.regions.length-1;i>=0;i--){
+      const r2=MS.regions[i];
+      if(Math.hypot(r2.x-mx,r2.y-my)<r2.r){ best=i; break; }
+    }
+    if(best>=0){
+      MS.whole=false;
+      const at=MS.sel.indexOf(best);
+      if(at>=0) MS.sel.splice(at,1); else MS.sel.push(best);
+      drawMeas();
+      const anyBig=MS.sel.some(i=>MS.regions[i].big);
+      tex(document.getElementById('hm'), !MS.sel.length? '\\text{click regions to combine them}'
+        : (anyBig? '\\text{big}' : '\\text{still small, however many you take}'));
+      return;
+    }
+    if(Math.hypot(mx-g.cx,my-g.cy)<g.R){
+      MS.whole=true; MS.sel=[]; drawMeas();
+      tex(document.getElementById('hm'),'\\text{big}'); return;
+    }
+    MS.whole=false; MS.sel=[]; drawMeas();
+    document.getElementById('hm').innerHTML='&nbsp;';
+  });
+
+  const rf=document.getElementById('refl');
+  rf.addEventListener('click',ev=>{
+    const b=rf.getBoundingClientRect(), mx=ev.clientX-b.left, my=ev.clientY-b.top;
+    const names=['\\text{measurable}','\\text{strong}','\\text{supercompact}','\\text{huge}'];
+    let best=-1;
+    for(let k=RF.c.length-1;k>=0;k--){
+      const o=RF.c[k];
+      if(Math.hypot(o.cx-mx,o.cy-my)<=o.R){ best=k; break; }
+    }
+    if(best<0) return;
+    RF.pick=best; drawRefl();
+    tex(document.getElementById('hr'),'\\text{agrees with the universe further up: }'+names[best]);
+  });
+
+  const ec=document.getElementById('endc');
+  ec.addEventListener('wheel',ev=>{ if(LIVE!=='endc')return; ev.preventDefault();
+    RE.rot+=ev.deltaY*0.004; drawEnd(); },{passive:false});
+  ec.addEventListener('click',ev=>{
+    const b=ec.getBoundingClientRect(), mx=ev.clientX-b.left, my=ev.clientY-b.top, g=RE.geom;
+    RE.on=Math.hypot(mx-g.cx,my-g.cy)<=g.R;
+    drawEnd();
+  });
+
+  document.addEventListener('keydown',ev=>{ if(ev.key==='Escape'){ if(LIVE&&U[LIVE]&&U[LIVE].pop) U[LIVE].pop(); else setLive(null); } });
+  window.addEventListener('resize',()=>{
+    drawFinite();drawOmega();drawTower();MS.regions=[];MS.sel=[];MS.dots=null;drawMeas();drawRefl();RE.pts=null;drawEnd();
+    ['u1','u2','u3','wall','wc'].forEach(k=>U[k].draw());
+  });
+}
+let BOOTED=false;
+function safeBoot(){ if(BOOTED) return; BOOTED=true; try{ boot(); }catch(e){ console.error(e); } }
+window.addEventListener('load',function(){
+  if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){
+    MathJax.startup.promise.then(safeBoot,safeBoot);
+  }
+  setTimeout(safeBoot,1500);
+});
+</script>
+</body>
+</html>
