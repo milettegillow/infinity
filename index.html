@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Infinite cardinalities</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='50' font-size='90' text-anchor='middle' dominant-baseline='central'%3E🌌%3C/text%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#050914;--panel:#080e1e;--ivory:#f3efe2;--gold:#c9b878}
@@ -30,7 +31,7 @@ section{margin-bottom:170px}
 .instr{font-size:17px;line-height:1.8;color:var(--gold);margin:14px 0 22px;max-width:80ch}
 .frame{background:var(--panel);border:1px solid rgba(201,184,120,0.28)}
 .frame.live{border-color:var(--gold)}
-canvas{display:block;width:100%;cursor:crosshair}
+canvas{display:block;width:100%;cursor:crosshair;touch-action:pan-y}
 .hint{font-size:17px;color:var(--gold);margin:14px 0 0;min-height:1.6em}
 .void{position:relative;height:1400px;overflow:hidden}
 .lad{position:absolute;top:0;width:32%;text-align:center}
@@ -526,18 +527,21 @@ function makeUniverse(id,rootSeed,maxDepth,hintId,opts){
     const a=Math.max(1,o.split||1), b=Math.max(1,o.nodes.length-a);
     return '\\{'+a+','+b+'\\}';
   }
-  c.addEventListener('wheel',ev=>{
-    if(LIVE!==id) return;
-    ev.preventDefault();
-    const b=c.getBoundingClientRect(), w=c.clientWidth, h=c.clientHeight;
-    const px=ev.clientX-b.left, py=ev.clientY-b.top;
+  function zoomAt(px,py,k){
+    const w=c.clientWidth, h=c.clientHeight;
     let cam=st.cam, ax=px-w/2, ay=py-h/2;
     if(opts.wc&&st.inner&&Math.hypot(px-st.inner.x,py-st.inner.y)<st.inner.r){
       cam=st.cam2; ax=px-st.inner.x; ay=py-st.inner.y;
     }
-    const k=Math.exp(-ev.deltaY*0.0018), nz=cam.z*k;
+    const nz=cam.z*k;
     cam.x+=ax/cam.z-ax/nz; cam.y+=ay/cam.z-ay/nz; cam.z=nz;
     draw();
+  }
+  c.addEventListener('wheel',ev=>{
+    if(LIVE!==id) return;
+    ev.preventDefault();
+    const b=c.getBoundingClientRect();
+    zoomAt(ev.clientX-b.left,ev.clientY-b.top,Math.exp(-ev.deltaY*0.0018));
   },{passive:false});
   c.addEventListener('click',ev=>{
     const b=c.getBoundingClientRect(), mx=ev.clientX-b.left, my=ev.clientY-b.top;
@@ -605,7 +609,7 @@ function makeUniverse(id,rootSeed,maxDepth,hintId,opts){
     st.stack=[]; st.snaps=[]; st.cam={x:0,y:0,z:1}; st.pick=null; st.focus=false; draw();
     document.getElementById(hintId).innerHTML='&nbsp;';
   }
-  return {draw:draw,pop:reset};
+  return {draw:draw,pop:reset,zoomAt:zoomAt};
 }
 
 /* tower */
@@ -845,6 +849,35 @@ function signature(){
   onScroll();
 }
 
+function attachPinch(el,fn){
+  let last=null, base=null;
+  function d2(e){
+    const a=e.touches[0], b=e.touches[1];
+    return Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);
+  }
+  function mid(e){
+    const a=e.touches[0], b=e.touches[1], r=el.getBoundingClientRect();
+    return {x:(a.clientX+b.clientX)/2-r.left, y:(a.clientY+b.clientY)/2-r.top};
+  }
+  el.addEventListener('gesturestart',e=>{ e.preventDefault(); base=e.scale||1; },{passive:false});
+  el.addEventListener('gesturechange',e=>{
+    e.preventDefault();
+    const sc=e.scale||1, k=base?sc/base:1; base=sc;
+    const r=el.getBoundingClientRect();
+    fn(k, (e.clientX||r.left+r.width/2)-r.left, (e.clientY||r.top+r.height/2)-r.top);
+  },{passive:false});
+  el.addEventListener('gestureend',e=>{ e.preventDefault(); base=null; },{passive:false});
+  el.addEventListener('touchstart',e=>{ if(e.touches.length===2){ e.preventDefault(); last=d2(e); } },{passive:false});
+  el.addEventListener('touchmove',e=>{
+    if(e.touches.length!==2) return;
+    e.preventDefault();
+    const d=d2(e);
+    if(last&&d>0){ const c2=mid(e); fn(d/last,c2.x,c2.y); }
+    last=d;
+  },{passive:false});
+  el.addEventListener('touchend',e=>{ if(e.touches.length<2){ last=null; base=null; } },{passive:false});
+}
+
 let LIVE=null;
 function setLive(k){
   LIVE=k;
@@ -968,6 +1001,14 @@ function boot(){
     const b=ec.getBoundingClientRect(), mx=ev.clientX-b.left, my=ev.clientY-b.top, g=RE.geom;
     RE.on=Math.hypot(mx-g.cx,my-g.cy)<=g.R;
     drawEnd();
+  });
+
+  attachPinch(fin,k=>{ FIN.t=Math.max(0,FIN.t+Math.log(k)*7); drawFinite(); });
+  attachPinch(om,k=>{ OM.s=Math.max(1,OM.s*k); drawOmega(); });
+  attachPinch(tw,k=>{ TW.s=Math.max(1,TW.s*k); drawTower(); });
+  ['u1','u2','u3','wall','wc'].forEach(key=>{
+    const el=document.getElementById(key);
+    attachPinch(el,(k,px,py)=>U[key].zoomAt(px,py,k));
   });
 
   document.addEventListener('keydown',ev=>{ if(ev.key==='Escape'){ if(LIVE&&U[LIVE]&&U[LIVE].pop) U[LIVE].pop(); else setLive(null); } });
